@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Overview Dashboard{% endblock %}
+{% block breadcrumb %}Home / Overview{% endblock %}
+
+{% block content %}
+<!-- Key Metrics Cards -->
+<section class="metrics-grid">
+    <div class="metric-card primary">
+        <div class="metric-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+        </div>
+        <div class="metric-info">
+            <h3>Total Tweets Analyzed</h3>
+            <p class="value">{{ "{:,}".format(chart_data.stats.total_tweets) }}</p>
+            <span class="trend positive">↑ Insights Gathered</span>
+        </div>
+    </div>
+    <div class="metric-card secondary">
+        <div class="metric-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+        </div>
+        <div class="metric-info">
+            <h3>Total Engagement</h3>
+            <p class="value">{{ "{:,}".format(chart_data.stats.total_engagement) }}</p>
+            <span class="trend">Likes, Retweets, Replies</span>
+        </div>
+    </div>
+    <div class="metric-card accent">
+        <div class="metric-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="4" y1="9" x2="20" y2="9" />
+                <line x1="4" y1="15" x2="20" y2="15" />
+                <line x1="10" y1="3" x2="8" y2="21" />
+                <line x1="16" y1="3" x2="14" y2="21" />
+            </svg>
+        </div>
+        <div class="metric-info">
+            <h3>Top Trending Hashtag</h3>
+            <p class="value hashtag">#{{ chart_data.stats.top_hashtag }}</p>
+            <span class="trend">Most active topic</span>
+        </div>
+    </div>
+</section>
+
+<!-- Charts Grid -->
+<section class="charts-grid">
+    <div class="chart-card full-width">
+        <div class="chart-header">
+            <h2>📈 Tweet Volume Over Time</h2>
+            <span class="chart-badge">Daily</span>
+        </div>
+        <div id="tweetsChart" class="plotly-container"></div>
+    </div>
+
+    <div class="chart-card">
+        <div class="chart-header">
+            <h2>😊 Sentiment Distribution</h2>
+            <span class="chart-badge">Breakdown</span>
+        </div>
+        <div id="sentimentChart" class="plotly-container"></div>
+    </div>
+
+    <div class="chart-card">
+        <div class="chart-header">
+            <h2>💬 Engagement Metrics</h2>
+            <span class="chart-badge">Trends</span>
+        </div>
+        <div id="engagementChart" class="plotly-container"></div>
+    </div>
+
+    <div class="chart-card full-width">
+        <div class="chart-header">
+            <h2># Top Hashtags</h2>
+            <span class="chart-badge">Ranking</span>
+        </div>
+        <div id="hashtagChart" class="plotly-container"></div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var tweetsData = {{ chart_data.tweets_chart | safe }};
+    var sentimentData = {{ chart_data.sentiment_chart | safe }};
+    var engagementData = {{ chart_data.engagement_chart | safe }};
+    var hashtagData = {{ chart_data.hashtag_chart | safe }};
+
+    var config = { responsive: true, displayModeBar: false };
+
+    Plotly.newPlot('tweetsChart', tweetsData.data, tweetsData.layout, config);
+    Plotly.newPlot('sentimentChart', sentimentData.data, sentimentData.layout, config);
+    Plotly.newPlot('engagementChart', engagementData.data, engagementData.layout, config);
+    Plotly.newPlot('hashtagChart', hashtagData.data, hashtagData.layout, config);
+</script>
+{% endblock %}

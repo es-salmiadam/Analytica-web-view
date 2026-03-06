@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Sentiment Analysis{% endblock %}
+{% block page_title %}Sentiment Analysis{% endblock %}
+{% block breadcrumb %}Home / Sentiment{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+    <p>This page analyzes the <strong>emotional tone</strong> of tweets using a sentiment scoring model. Each tweet
+        receives a score from 0 (very negative) to 1 (very positive). Days are classified as <strong
+            style="color: #3fb950;">Positive</strong> (≥ 0.11), <strong style="color: #d29922;">Neutral</strong>
+        (0.085–0.11), or <strong style="color: #f85149;">Negative</strong> (&lt; 0.085) based on their average daily
+        score.</p>
+</section>
+
+<!-- Sentiment Insight Cards -->
+<section class="metrics-grid">
+    <div class="metric-card primary">
+        <div class="metric-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                <line x1="9" y1="9" x2="9.01" y2="9" />
+                <line x1="15" y1="9" x2="15.01" y2="9" />
+            </svg>
+        </div>
+        <div class="metric-info">
+            <h3>Average Sentiment Score</h3>
+            <p class="value">{{ sentiment_data.stats.avg_score }}</p>
+            <span class="trend">Scale: 0 (negative) → 1 (positive)</span>
+        </div>
+    </div>
+    <div class="metric-card accent">
+        <div class="metric-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+            </svg>
+        </div>
+        <div class="metric-info">
+            <h3>Most Positive Day</h3>
+            <p class="value hashtag">{{ sentiment_data.stats.best_day }}</p>
+            <span class="trend positive">Score: {{ sentiment_data.stats.best_score }}</span>
+        </div>
+    </div>
+    <div class="metric-card secondary">
+        <div class="metric-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" />
+            </svg>
+        </div>
+        <div class="metric-info">
+            <h3>Most Negative Day</h3>
+            <p class="value hashtag">{{ sentiment_data.stats.worst_day }}</p>
+            <span class="trend" style="color: #f85149;">Score: {{ sentiment_data.stats.worst_score }}</span>
+        </div>
+    </div>
+</section>
+
+<!-- Sentiment Category Banner -->
+<section class="insight-banner">
+    <div class="insight-icon">📊</div>
+    <div class="insight-text">
+        <h3>Sentiment Breakdown: {{ sentiment_data.stats.total_days }} Days Analyzed</h3>
+        <p>Out of {{ sentiment_data.stats.total_days }} days: <strong style="color: #3fb950;">{{
+                sentiment_data.stats.pos_days }} positive</strong> ({{ sentiment_data.stats.pos_pct }}%), <strong
+                style="color: #d29922;">{{ sentiment_data.stats.neu_days }} neutral</strong> ({{
+            sentiment_data.stats.neu_pct }}%), and <strong style="color: #f85149;">{{ sentiment_data.stats.neg_days }}
+                negative</strong> ({{ sentiment_data.stats.neg_pct }}%).</p>
+    </div>
+</section>
+
+<section class="charts-grid">
+    <div class="chart-card">
+        <div class="chart-header">
+            <h2>🥧 Sentiment Category Split</h2>
+            <span class="chart-badge">Distribution</span>
+        </div>
+        <div id="sentimentPie" class="plotly-container"></div>
+    </div>
+
+    <div class="chart-card">
+        <div class="chart-header">
+            <h2>📊 Score Distribution</h2>
+            <span class="chart-badge">Histogram</span>
+        </div>
+        <div id="sentimentHist" class="plotly-container"></div>
+    </div>
+
+    <div class="chart-card full-width">
+        <div class="chart-header">
+            <h2>📈 Sentiment Score Over Time</h2>
+            <span class="chart-badge">Daily</span>
+        </div>
+        <div id="sentimentLine" class="plotly-container"></div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var pieData = {{ sentiment_data.pie_chart | safe }};
+    var histData = {{ sentiment_data.hist_chart | safe }};
+    var lineData = {{ sentiment_data.line_chart | safe }};
+
+    var config = { responsive: true, displayModeBar: false };
+
+    Plotly.newPlot('sentimentPie', pieData.data, pieData.layout, config);
+    Plotly.newPlot('sentimentHist', histData.data, histData.layout, config);
+    Plotly.newPlot('sentimentLine', lineData.data, lineData.layout, config);
+</script>
+{% endblock %}
