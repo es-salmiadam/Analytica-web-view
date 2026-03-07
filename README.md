@@ -17,7 +17,7 @@
 - **Data Visualization:** Plotly (Plotly Express & Plotly Graph Objects)
 - **Frontend:** HTML, CSS, Jinja2 (Templates)
 
-## 📁 Project Structure
+## 📁 Project structure
 
 ```
 Analytica-web-view/
